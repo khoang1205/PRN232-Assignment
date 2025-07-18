@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 	<ItemGroup>
-		
-		<Protobuf Include="user.proto" GrpcServices="None" />
-		<Protobuf Include="appointment.proto" GrpcServices="None" />
+		<Protobuf Include="notification.proto" GrpcServices="Both" />
+		<Protobuf Include="appointment.proto" GrpcServices="Both" />
+		<Protobuf Include="user.proto" GrpcServices="Both" />
 	</ItemGroup>
 </Project>
