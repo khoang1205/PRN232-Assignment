@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -9,7 +9,6 @@
   <ItemGroup>
     <Protobuf Include="Protos\greet.proto" GrpcServices="Server" />
   </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Google.Protobuf" Version="3.31.1" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
@@ -29,10 +28,13 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		
-		<Protobuf Include="..\contracts\user.proto" GrpcServices="Server" />
-	</ItemGroup>
-	<ItemGroup>
 		<ProjectReference Include="..\contracts\Contracts.csproj" />
+		<Protobuf Include="..\contracts\user.proto" GrpcServices="Client" />
+		<Protobuf Include="..\contracts\notification.proto" GrpcServices="Client" />
+		<Protobuf Include="..\contracts\appointment.proto" GrpcServices="Server" />
 	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
+  </ItemGroup>
+
 </Project>

@@ -15,7 +15,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <ProjectReference Include="..\contracts\contracts.csproj" />
+    <ProjectReference Include="..\contracts\Contracts.csproj" />
 	  <Protobuf Include="..\contracts\notification.proto" GrpcServices="Server" />
   </ItemGroup>
 
