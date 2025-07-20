@@ -28,7 +28,7 @@
 		</PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\contracts\contracts.csproj" />
+		<ProjectReference Include="..\contracts\Contracts.csproj" />
 		<Protobuf Include="..\contracts\user.proto" GrpcServices="Client" />
 		<Protobuf Include="..\contracts\notification.proto" GrpcServices="Client" />
 		<Protobuf Include="..\contracts\appointment.proto" GrpcServices="Server" />

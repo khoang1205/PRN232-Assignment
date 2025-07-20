@@ -18,7 +18,7 @@ namespace api_gateway.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AppointmentResponse>> Create([FromBody] CreateAppointmentRequest request)
+        public async Task<ActionResult<AppointmentResponse>> Create([FromBody] Appointment.CreateAppointmentRequest request)
         {
             // Convert string to Guid and DateTime
             var appointmentId = await _appointmentService.CreateAsync(
