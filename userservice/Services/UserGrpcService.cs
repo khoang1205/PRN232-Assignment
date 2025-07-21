@@ -6,7 +6,7 @@ using User;
 
 
 
-namespace userservice.Services
+namespace PRN232.UserService.Services
 {
     public class UserGrpcService : User.UserService.UserServiceBase 
     {

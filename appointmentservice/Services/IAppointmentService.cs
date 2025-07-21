@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace appointment_service.Services
+namespace PRN232_Assignment.AppointmentService.Services
 {
     public interface IAppointmentService
     {

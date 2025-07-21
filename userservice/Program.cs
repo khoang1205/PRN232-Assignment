@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
-using userservice.Services;
+using PRN232.UserService.Services;
 
-namespace userservice
+namespace PRN232.UserService
 {
     public class Program
     {
@@ -10,10 +10,10 @@ namespace userservice
             var builder = WebApplication.CreateBuilder(args);
 
            
-            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IUserService, Services.UserService>();
 
             
-            builder.Services.AddDbContext<userservice.Data.UserDbContext>(options =>
+            builder.Services.AddDbContext<PRN232.UserService.Data.UserDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             

@@ -5,10 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-using user_service.Entities;
-using userservice.Data;
+using PRN232.UserService.Data;
 
-namespace userservice.Services
+namespace PRN232.UserService.Services
 {
     public class UserService : IUserService
     {
@@ -19,19 +18,19 @@ namespace userservice.Services
             _context = context;
         }
 
-        public async Task<user_service.Entities.User> GetByIdAsync(Guid id)
+        public async Task<Entities.User> GetByIdAsync(Guid id)
         {
             return await _context.Users.FindAsync(id);
         }
 
-        public async Task<List<user_service.Entities.User>> GetAllAsync()
+        public async Task<List<Entities.User>> GetAllAsync()
         {
             return await _context.Users.ToListAsync();
         }
 
         public async Task<Guid> CreateAsync(string name, string role)
         {
-            var user = new user_service.Entities.User { Name = name, Role = role };
+            var user = new Entities.User { Name = name, Role = role };
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
             return user.Id;

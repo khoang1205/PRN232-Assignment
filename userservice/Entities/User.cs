@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace user_service.Entities
+namespace PRN232.UserService.Entities
 {
     public class User
     {

@@ -1,9 +1,9 @@
-using appointment_service.Controller;
-using appointment_service.Data;
-using appointment_service.Services;
 using Microsoft.EntityFrameworkCore;
+using PRN232.AppointmentService.Controller;
+using PRN232_Assignment.AppointmentService.Data;
+using PRN232_Assignment.AppointmentService.Services;
 
-namespace appointmentservice
+namespace PRN232_Assignment.AppointmentService
 {
     public class Program
     {
