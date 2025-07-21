@@ -1,0 +1,6 @@
+@PRN232_Assignment.DoctorService.Api_HostAddress = http://localhost:5292
+
+GET {{PRN232_Assignment.DoctorService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

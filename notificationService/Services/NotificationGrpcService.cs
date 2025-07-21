@@ -1,7 +1,7 @@
 ﻿using Grpc.Core;
 using Notification; 
 
-namespace notification_service.Services
+namespace PRN232.Assignment.NotificationService
 {
     public class NotificationGrpcService : NotificationService.NotificationServiceBase
     {

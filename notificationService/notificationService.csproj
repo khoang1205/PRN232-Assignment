@@ -7,15 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Protos\**" />
+    <Content Remove="Protos\**" />
+    <EmbeddedResource Remove="Protos\**" />
+    <None Remove="Protos\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.57.0" />
   </ItemGroup>
 	
   <ItemGroup>
-    <Folder Include="Protos\" />
-  </ItemGroup>
-	
-  <ItemGroup>
-    <ProjectReference Include="..\contracts\Contracts.csproj" />
 	  <Protobuf Include="..\contracts\notification.proto" GrpcServices="Server" />
   </ItemGroup>
 

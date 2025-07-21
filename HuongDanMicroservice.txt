@@ -1,0 +1,58 @@
+﻿1. Chỉ cần chạy 1 API của 1 service để test API
+
+2. API Gateway là đóng vai trò như 1 server có port riêng. Và nó sẽ là port trung gian để 
+chuyển tiếp các request đến các service có port khác. (cái này không cần phải nhớ nhiều port
+làm gì mà chỉ cần nhớ 1 port là có thể gọi API khác nhau)
+    Ví dụ: 
+    - API Doctor có port là 7238
+    https://localhost:7238/doctors thì Gateway là http://localhost:5027/api/doctors
+    cả 2 port này đều lấy được dữ liệu cả
+
+    * Cách test bằng Postman: 
+    1. Chạy cả 2 project (trong đó 1 project có API là Doctor, 1 là gateway)
+    2. Ở postman nhập
+        - Port Doctor: 
+        (cách lấy port này dựa vào appsetting chỗ "Path": "/api/{**catch-all}" rồi thêm [Route("doctors")] 
+        trong controller nữa là được)
+        https://localhost:7238/doctors (port này thì test bình thường như mọi khi thôi)
+        http://localhost:5027/api/doctors (port này là của gateway)
+
+        => Sau này có thêm các API khác thì chỉ cần thêm port vào appsetting là được 
+
+        Đây là link hình ảnh mô tả cách hoạt động của API Gateway:
+        https://learn.microsoft.com/en-us/dotnet/architecture/microservices/multi-container-microservice-net-applications/media/data-driven-crud-microservice/internal-design-simple-crud-microservices.png
+
+
+3. Thầy nói phải dùng ít nhất 2 DB, nên phải dùng các DB khác ngoài SQL Server. Nếu muốn lấy
+dữ liệu từ DB nào thì gọi qua API của Service đó.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Không liên quan 
+
+    "Container (Dockerfile)": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "publishAllPorts": true,
+      "useSSL": true
+    }

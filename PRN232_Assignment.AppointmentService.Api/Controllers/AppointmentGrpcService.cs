@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Grpc.Core;
-using Appointment;
-using appointment_service.Services;
-using appointment_service.Entities;
-namespace appointment_service.Controller
+﻿namespace PRN232_Assignment.AppointmentService.Api.Controllers
 {
     public class AppointmentGrpcService : Appointment.AppointmentService.AppointmentServiceBase
 
