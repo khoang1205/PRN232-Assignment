@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  apigateway:
+    build:
+      context: ./PRN232_Assignment.ApiGateway
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - doctorservice
+
+  doctorservice:
+    build:
+      context: ./PRN232_Assignment.DoctorService.Api
+      dockerfile: Dockerfile
+    ports:
+      - "5003:80"

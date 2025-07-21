@@ -21,7 +21,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserService", "UserService"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DoctorService", "DoctorService", "{DBBC1490-F46E-4282-9A75-C08F0FCAAA2E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppoinmentService", "AppoinmentService", "{1D854CFE-E74A-47A0-A04B-1EEDD9BFD4EB}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AppointmentService", "AppointmentService", "{1D854CFE-E74A-47A0-A04B-1EEDD9BFD4EB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "NotificationService", "NotificationService", "{818A73DA-39B7-4121-A78A-B8BF41850C2E}"
 EndProject
@@ -37,6 +37,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN232_Assignment.DoctorService.Service", "PRN232_Assignment.AppointmentService.Service\PRN232_Assignment.DoctorService.Service.csproj", "{105CDB6A-F9AB-4CEC-834A-0DBFC219A84C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PRN232_Assignment.DoctorService.Repository", "PRN232_Assignment.AppointmentService.Repository\PRN232_Assignment.DoctorService.Repository.csproj", "{A382CBC0-ED5F-460C-A45D-AA29720B481E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{726AD157-65E1-4135-B90D-2B3587F01029}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
