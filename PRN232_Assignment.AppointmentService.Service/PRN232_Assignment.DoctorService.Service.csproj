@@ -10,4 +10,8 @@
     <ProjectReference Include="..\PRN232_Assignment.AppointmentService.Repository\PRN232_Assignment.DoctorService.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\Response\" />
+  </ItemGroup>
+
 </Project>
