@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -114,6 +113,12 @@ namespace PRN232_Assignment.UserService.Api
 
             //app.MapControllers();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
+                dbContext.Database.Migrate();
+            }
 
             app.Run();
         }
