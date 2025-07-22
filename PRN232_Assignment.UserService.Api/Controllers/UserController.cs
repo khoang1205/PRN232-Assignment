@@ -35,6 +35,11 @@ namespace PRN232_Assignment.UserService.Api.Controllers
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] RegisterDto registerDto)
         {
+            if (registerDto.RoleId != 1 && registerDto.RoleId != 2)
+            {
+                return BadRequest(new { message = "roleId must be 1: Doctor, 2: Patient" });
+            }
+
             var success = await _userService.Register(registerDto);
             if (!success)
                 return BadRequest(new { message = "Email already exists." });
