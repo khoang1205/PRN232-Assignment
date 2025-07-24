@@ -14,9 +14,6 @@ x64/
 [Bb]in/
 [Oo]bj/
 
-# Appsetting
-**/appsettings.json
-
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
