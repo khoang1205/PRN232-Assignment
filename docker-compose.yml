@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  apigateway:
+    build:
+      context: .
+      dockerfile: PRN232_Assignment.ApiGateway/Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - doctorservice
+      - userservice
+
+  doctorservice:
+    build:
+      context: .
+      dockerfile: PRN232_Assignment.DoctorService.Api/Dockerfile
+    ports:
+      - "5003:80"
+
+  userservice:
+    build:
+      context: .
+      dockerfile: PRN232_Assignment.UserService.Api/Dockerfile
+    ports:
+      - "5001:80"
+
+
+  backgroundworker:
+    build:
+      context: .
+      dockerfile: backgroundWorker/Dockerfile
+
+  appointmentgrpc:
+    build:
+      context: .
+      dockerfile: PRN232_Assignment.AppointmentService.Grpc/Dockerfile
+    ports:
+      - "5005:80"
+
+  notificationgrpc:
+    build:
+      context: .
+      dockerfile: PRN232_Assignment.NotificationService.Grpc/Dockerfile
+    ports:
+      - "5006:80"

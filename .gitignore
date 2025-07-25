@@ -14,9 +14,6 @@ x64/
 [Bb]in/
 [Oo]bj/
 
-# Appsetting
-**/appsettings.json
-
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
@@ -136,3 +133,4 @@ $RECYCLE.BIN/
 _NCrunch*
 **/google-key.json 
 
+/PRN232_ASSIGNMENT.sln

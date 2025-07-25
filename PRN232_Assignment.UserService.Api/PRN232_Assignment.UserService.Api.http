@@ -1,0 +1,6 @@
+@PRN232_Assignment.UserService.Api_HostAddress = http://localhost:5012
+
+GET {{PRN232_Assignment.UserService.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
