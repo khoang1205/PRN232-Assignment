@@ -6,17 +6,19 @@ services:
       context: .
       dockerfile: PRN232_Assignment.ApiGateway/Dockerfile
     ports:
-      - "5000:80"
+      - "8088:8080"
     depends_on:
       - doctorservice
       - userservice
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
 
   doctorservice:
     build:
       context: .
       dockerfile: PRN232_Assignment.DoctorService.Api/Dockerfile
     ports:
-      - "5003:80"
+      - "8089:8080"
 
   userservice:
     build:
