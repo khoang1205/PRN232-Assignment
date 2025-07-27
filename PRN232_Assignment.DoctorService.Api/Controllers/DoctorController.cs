@@ -32,7 +32,8 @@ namespace PRN232_Assignment.DoctorService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] DoctorCreateRequest request)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Create([FromForm] DoctorCreateRequest request)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -42,7 +43,8 @@ namespace PRN232_Assignment.DoctorService.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(string id, [FromBody] Doctor doctor)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> Update(string id, [FromForm] DoctorUpdateRequest doctor)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 

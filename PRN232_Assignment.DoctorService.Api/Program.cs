@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using CloudinaryDotNet;
+using MongoDB.Driver;
 using PRN232_Assignment.DoctorService.Repository;
 using PRN232_Assignment.DoctorService.Repository.Entities;
 using PRN232_Assignment.DoctorService.Repository.IRepository;
@@ -33,6 +34,20 @@ builder.Services.AddScoped<IMongoDatabase>(sp =>
 });
 
 // ======================================================================================================== //
+// Cloudinary configuration
+builder.Services.AddSingleton(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+
+    var cloudName = config["Cloudinary:CloudName"];
+    var apiKey = config["Cloudinary:ApiKey"];
+    var apiSecret = config["Cloudinary:ApiSecret"];
+
+    var account = new Account(cloudName, apiKey, apiSecret);
+    return new Cloudinary(account);
+});
+// ======================================================================================================== //
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -13,7 +13,7 @@ namespace PRN232_Assignment.DoctorService.Service.IService
         Task<List<Doctor>> GetAllAsync();
         Task<Doctor?> GetByIdAsync(string id);
         Task<Doctor> CreateAsync(DoctorCreateRequest doctor);
-        Task<bool> UpdateAsync(string id, Doctor doctor);
+        Task<bool> UpdateAsync(string id, DoctorUpdateRequest doctor);
         Task<bool> DeleteAsync(string id);
         Task<List<Doctor>> SearchAsync(string? name, string? specialty);
     }

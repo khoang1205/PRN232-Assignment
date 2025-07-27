@@ -24,7 +24,7 @@ namespace PRN232_Assignment.DoctorService.Repository.Entities
         [BsonElement("isActive")]
         public bool IsActive { get; set; } = true;
 
-        [BsonElement("createdAt")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [BsonElement("avatar")]
+        public string? Avatar { get; set; }
     }
 }
