@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PRN232_Assignment.AppointmentService.Grpc.Entities;
 
-namespace PRN232_Assignment.AppointmentService.Data
+namespace PRN232_Assignment.AppointmentService.Grpc.Data
 {
     public class ApplicationDbContext : DbContext
     {
@@ -8,7 +9,9 @@ namespace PRN232_Assignment.AppointmentService.Data
 
       
         public DbSet<Entities.Appointment> Appointments { get; set; }
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		public DbSet<DailySchedule> DailySchedules { get; set; }
+		public DbSet<TimeSlot> TimeSlots { get; set; }
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
         }
