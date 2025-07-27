@@ -1,10 +1,27 @@
-using PRN232_Assignment.AppointmentService.Controller;
+﻿using Microsoft.EntityFrameworkCore;
+using Notification;
+using PRN232_Assignment.AppointmentService.Grpc.Controller;
+using PRN232_Assignment.AppointmentService.Grpc.Data;
+using PRN232_Assignment.AppointmentService.Grpc.Services;
+using User;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddGrpc();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Đăng ký gRPC client cho UserService và NotificationService
+builder.Services.AddGrpcClient<UserService.UserServiceClient>(o =>
+{
+	o.Address = new Uri("https://localhost:7073");
+});
 
+builder.Services.AddGrpcClient<NotificationService.NotificationServiceClient>(o =>
+{
+	o.Address = new Uri("https://localhost:7075");
+});
+builder.Services.AddScoped<IAppointmentService, AppointmentBusinessService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

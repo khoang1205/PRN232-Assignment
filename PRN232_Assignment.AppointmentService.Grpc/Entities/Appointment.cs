@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRN232_Assignment.AppointmentService.Entities
+namespace PRN232_Assignment.AppointmentService.Grpc.Entities
 {
     public class Appointment
     {

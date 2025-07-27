@@ -1,13 +1,17 @@
-﻿using System;
+﻿using PRN232_Assignment.AppointmentService.Grpc.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PRN232_Assignment.AppointmentService.Services
+namespace PRN232_Assignment.AppointmentService.Grpc.Services
 {
     public interface IAppointmentService
     {
-        Task<string> CreateAsync(string doctorId, string patientId, string timeSlot);
-    }
+		Task<string> CreateScheduleAsync(string doctorId, string date);
+		Task<List<TimeSlot>> GetAvailableSlotsAsync(string doctorId, string date);
+		Task<string> BookSlotAsync(string slotId, string patientId);
+
+	}
 }
