@@ -1,4 +1,4 @@
-version: '3.8'
+﻿version: '3.8'
 
 services:
   apigateway:
@@ -38,7 +38,7 @@ services:
       context: .
       dockerfile: PRN232_Assignment.AppointmentService.Grpc/Dockerfile
     ports:
-      - "5005:80"
+      - "8087:8080"
 
   notificationgrpc:
     build:
@@ -46,3 +46,11 @@ services:
       dockerfile: PRN232_Assignment.NotificationService.Grpc/Dockerfile
     ports:
       - "5006:80"
+
+  sql-server:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      - 'ACCEPT_EULA=Y'
+      - 'SA_PASSWORD=12345'
+    ports:
+      - "1433:1433"
