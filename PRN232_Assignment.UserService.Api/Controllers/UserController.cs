@@ -4,7 +4,7 @@ using PRN232_Assignment.UserService.Repository.Entities;
 using PRN232_Assignment.UserService.Service;
 using PRN232_Assignment.UserService.Service.IService;
 using PRN232_Assignment.UserService.Service.Models;
-
+using EntityUser = PRN232_Assignment.UserService.Repository.Entities.User;
 namespace PRN232_Assignment.UserService.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -47,14 +47,14 @@ namespace PRN232_Assignment.UserService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<User>>> GetAll()
+        public async Task<ActionResult<List<EntityUser>>> GetAll()
         {
             var users = await _userService.GetAllAsync();
             return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetById(Guid id)
+        public async Task<ActionResult<EntityUser>> GetById(Guid id)
         {
             var user = await _userService.GetByIdAsync(id);
             if (user == null)

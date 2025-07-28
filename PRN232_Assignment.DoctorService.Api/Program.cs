@@ -5,7 +5,7 @@ using PRN232_Assignment.DoctorService.Repository.Entities;
 using PRN232_Assignment.DoctorService.Repository.IRepository;
 using PRN232_Assignment.DoctorService.Service;
 using PRN232_Assignment.DoctorService.Service.IService;
-
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

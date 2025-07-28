@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PRN232_Assignment.AppointmentService.Grpc.Migrations
 {
     /// <inheritdoc />
-    public partial class InitDb : Migration
+    public partial class db : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -31,7 +31,7 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    DoctorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DoctorId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>

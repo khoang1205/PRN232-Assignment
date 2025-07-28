@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Grpc.Core;
+using Microsoft.EntityFrameworkCore;
 using Notification;
 using PRN232_Assignment.AppointmentService.Grpc.Data;
 using PRN232_Assignment.AppointmentService.Grpc.Entities;
@@ -22,19 +23,21 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             _userClient = userClient;
             _notificationClient = notificationClient;
         }
+       
 
-		public async Task<string> CreateScheduleAsync(string doctorId, string dateStr)
+
+        public async Task<string> CreateScheduleAsync(string doctorId, string dateStr)
 		{
 			var date = DateTime.Parse(dateStr);
 			if (date.DayOfWeek == DayOfWeek.Sunday)
 				throw new Exception("Không thể tạo lịch vào Chủ Nhật.");
-			// 👇 Hardcode tạm GUID để test nếu chưa có DoctorId thật
-			var hardcodedDoctorId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-			var schedule = new DailySchedule
+            // 👇 Hardcode tạm GUID để test nếu chưa có DoctorId thật
+          
+            var schedule = new DailySchedule
 			{
 				Id = Guid.NewGuid(),
 				//DoctorId = Guid.Parse(doctorId),
-				DoctorId = hardcodedDoctorId,
+				DoctorId = doctorId,
 				Date = date,
 				TimeSlots = GenerateTimeSlots(date)
 			};
@@ -72,7 +75,7 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 			var date = DateTime.Parse(dateStr);
 			var schedule = await _context.DailySchedules
 				.Include(s => s.TimeSlots)
-				.FirstOrDefaultAsync(s => s.DoctorId == Guid.Parse(doctorId) && s.Date.Date == date.Date);
+				.FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date.Date == date.Date);
 
 			return schedule?.TimeSlots
 				.Where(s => s.PatientId == null)
@@ -99,8 +102,34 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 			slot.PatientId = Guid.Parse(patientId);
 			slot.Status = "Booked";
 			await _context.SaveChangesAsync();
+            var patient = await _userClient.GetUserAsync(new UserIdRequest
+            {
+                Id = patientId
+            });
+           
+            var doctor = await _userClient.GetUserAsync(new UserIdRequest
+            {
+                Id = slot.DailySchedule.DoctorId
+            });
+            var patientName = patient?.Name ?? "bệnh nhân";
+            var doctorName = doctor?.Name ?? "bác sĩ";
+            //gui noti cho benh nhan
+            await _notificationClient.SendNotificationAsync(new NotificationRequest
+            {
+                UserId = patientId,
+                Type = "Appointment",
+                Message = $"Bạn đã đặt lịch với {doctorName} lúc {slot.StartTime:HH:mm dd/MM}"
+            });
+           
+            //gui noti cho bac si
+            await _notificationClient.SendNotificationAsync(new NotificationRequest
+            {
+                UserId = slot.DailySchedule.DoctorId, 
+                Type = "Appointment",
+                Message = $"Bệnh nhân {patientName} đã đặt lịch khám lúc {slot.StartTime:HH:mm dd/MM}"
+            });
 
-			return slot.Id.ToString();
+            return slot.Id.ToString();
 		}
 
 	}

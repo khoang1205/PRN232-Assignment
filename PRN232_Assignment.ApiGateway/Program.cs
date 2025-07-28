@@ -1,5 +1,5 @@
 ﻿var builder = WebApplication.CreateBuilder(args);
-
+Console.OutputEncoding = System.Text.Encoding.UTF8;
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

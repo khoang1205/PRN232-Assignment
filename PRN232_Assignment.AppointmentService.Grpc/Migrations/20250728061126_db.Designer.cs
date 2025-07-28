@@ -12,8 +12,8 @@ using PRN232_Assignment.AppointmentService.Grpc.Data;
 namespace PRN232_Assignment.AppointmentService.Grpc.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250727143749_InitDb")]
-    partial class InitDb
+    [Migration("20250728061126_db")]
+    partial class db
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,8 +58,9 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

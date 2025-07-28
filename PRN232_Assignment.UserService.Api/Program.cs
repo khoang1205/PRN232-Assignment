@@ -1,13 +1,15 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using PRN232_Assignment.UserService.Api.Services;
 using PRN232_Assignment.UserService.Repository.Data;
 using PRN232_Assignment.UserService.Repository.Repository;
 using PRN232_Assignment.UserService.Service.IService;
 using PRN232_Assignment.UserService.Service.Mappings;
 using System.Text;
 using System.Text.Json.Serialization;
+using PRN232_Assignment.AppointmentService.Grpc.Services;
 
 namespace PRN232_Assignment.UserService.Api
 {
@@ -16,7 +18,7 @@ namespace PRN232_Assignment.UserService.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Services.AddGrpc();
             // Add services to the container.
             builder.Services.AddControllers()
                 .AddJsonOptions(options =>
@@ -30,6 +32,10 @@ namespace PRN232_Assignment.UserService.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Dependency Injection
+          
+
+
+
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUserService, PRN232_Assignment.UserService.Service.Service.UserService>();
 
@@ -84,8 +90,19 @@ namespace PRN232_Assignment.UserService.Api
                         new string[] {}
                     }
                 };
-
+              
                 c.AddSecurityRequirement(securityRequirement);
+            });
+            builder.WebHost.ConfigureKestrel(options =>
+            {
+                // HTTP
+                options.ListenLocalhost(5012);
+
+                // HTTPS for gRPC (bắt buộc gRPC phải dùng HTTP/2)
+                options.ListenLocalhost(7073, listenOptions =>
+                {
+                    listenOptions.UseHttps(); // Ensure you have dev certificate trusted
+                });
             });
 
             builder.Services.AddAuthorization();
@@ -93,6 +110,10 @@ namespace PRN232_Assignment.UserService.Api
             builder.Services.AddCors();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddHttpClient<DoctorClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7238"); // URL của DoctorService
+            });
 
             //===================================
             var app = builder.Build();
@@ -110,15 +131,20 @@ namespace PRN232_Assignment.UserService.Api
             //Use Authentication
             app.UseAuthentication();
             app.UseAuthorization();
+           
 
             //app.MapControllers();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
-
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers(); // REST API
+                endpoints.MapGrpcService<UserGrpcService>(); // gRPC Service
+            });
             using (var scope = app.Services.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
                 dbContext.Database.Migrate();
             }
+
 
             app.Run();
         }

@@ -55,8 +55,9 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("DoctorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

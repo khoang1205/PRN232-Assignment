@@ -8,16 +8,17 @@ using PRN232_Assignment.UserService.Service.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using EntityUser = PRN232_Assignment.UserService.Repository.Entities.User;
 
 namespace PRN232_Assignment.UserService.Service.Service
 {
     public class UserService : IUserService
     {
-        private readonly IGenericRepository<User> _repository;
+        private readonly IGenericRepository<EntityUser> _repository;
         private readonly IConfiguration _config;
         private readonly IMapper _mapper;
 
-        public UserService(IGenericRepository<User> repository, IMapper mapper, IConfiguration config)
+        public UserService(IGenericRepository<EntityUser> repository, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _mapper = mapper;
@@ -40,7 +41,7 @@ namespace PRN232_Assignment.UserService.Service.Service
             };
         }
 
-        public async Task<User> GetByIdAsync(Guid id)
+        public async Task<EntityUser> GetByIdAsync(Guid id)
         {
             var user = await _repository.GetByIdAsync(id);
             if (user == null)
@@ -48,7 +49,7 @@ namespace PRN232_Assignment.UserService.Service.Service
             return user;
         }
 
-        public async Task<List<User>> GetAllAsync()
+        public async Task<List<EntityUser>> GetAllAsync()
         {
             var users = await _repository.GetAllAsync(null, r => r.Role);
             return users.ToList();
@@ -60,12 +61,12 @@ namespace PRN232_Assignment.UserService.Service.Service
             if (existingUser != null)
                 return false;
 
-            var user = _mapper.Map<User>(registerDto);
+            var user = _mapper.Map<EntityUser>(registerDto);
             await _repository.AddAsync(user);
             return true;
         }
 
-        private string GenerateJwtToken(User user)
+        private string GenerateJwtToken(EntityUser user)
         {
             var claims = new[]
             {
