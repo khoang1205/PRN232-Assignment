@@ -6,7 +6,7 @@ service AppointmentService {
  rpc CreateSchedule (CreateScheduleRequest) returns (ScheduleResponse);
 rpc GetAvailableSlots (GetSlotsRequest) returns (GetSlotsReply);
 rpc BookSlot (BookSlotRequest) returns (AppointmentResponse);
-
+rpc GetAppointmentsByPatientId (GetAppointmentsByPatientIdRequest) returns (GetAppointmentsByPatientIdResponse);
 }
 
 message CreateScheduleRequest {
@@ -41,4 +41,21 @@ message GetSlotsReply {
 message BookSlotRequest {
   string slotId = 1;
   string patientId = 2;
+}
+
+message GetAppointmentsByPatientIdRequest {
+  string patientId = 1;
+}
+
+message AppointmentDetail {
+  string appointmentId = 1;
+  string patientId = 2;
+  string doctorId = 3;
+  string doctorName = 4;
+  string timeSlot = 5;
+  string status = 6;
+}
+
+message GetAppointmentsByPatientIdResponse {
+  repeated AppointmentDetail appointments = 1;
 }
