@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 // Đăng ký gRPC client cho UserService và NotificationService
 
+
 builder.Services.AddGrpcClient<UserService.UserServiceClient>(o =>
 {
 	o.Address = new Uri("https://localhost:7073");

@@ -1,6 +1,7 @@
 ﻿using Grpc.Core;
 using Appointment;
 using PRN232_Assignment.AppointmentService.Grpc.Services;
+using Microsoft.AspNetCore.SignalR;
 
 namespace PRN232_Assignment.AppointmentService.Grpc.Controller
 {
@@ -9,11 +10,12 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
     {
         private readonly DoctorClient _doctorClient;
         private readonly IAppointmentService _service;
-
+       
         public AppointmentGrpcService(IAppointmentService service, DoctorClient doctorClient)
         {
             _service = service;
             _doctorClient = doctorClient;
+           
         }
 
         public override async Task<ScheduleResponse> CreateSchedule(CreateScheduleRequest request, ServerCallContext context)
@@ -61,7 +63,10 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
 		public override async Task<AppointmentResponse> BookSlot(BookSlotRequest request, ServerCallContext context)
 		{
 			var id = await _service.BookSlotAsync(request.SlotId, request.PatientId);
-			return new AppointmentResponse { AppointmentId = id, Status = "Booked" };
+            var doctorId = await _service.GetDoctorIdFromSlotAsync(request.SlotId);
+
+           
+            return new AppointmentResponse { AppointmentId = id, Status = "Booked" };
 		}
 
 	}

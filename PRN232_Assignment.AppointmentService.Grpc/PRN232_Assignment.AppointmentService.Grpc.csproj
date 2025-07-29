@@ -20,6 +20,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.2.0" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
@@ -35,6 +36,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PRN232_Assignment.Contract\PRN232_Assignment.Contract.csproj" />		
 		<Protobuf Include="..\PRN232_Assignment.Contract\user.proto" GrpcServices="Client" />
+		<Protobuf Include="..\PRN232_Assignment.Contract\appointment.proto" GrpcServices="Client" />
 		<Protobuf Include="..\PRN232_Assignment.Contract\notification.proto" GrpcServices="Client" />
 		<Protobuf Include="..\PRN232_Assignment.Contract\appointment.proto" GrpcServices="Server" />
 	</ItemGroup>

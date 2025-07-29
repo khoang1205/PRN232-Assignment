@@ -34,8 +34,6 @@ namespace PRN232_Assignment.UserService.Api
             // Dependency Injection
           
 
-
-
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUserService, PRN232_Assignment.UserService.Service.Service.UserService>();
 
