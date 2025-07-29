@@ -136,27 +136,29 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             return slot.Id.ToString();
 		}
 
-		public async Task<List<AppointmentWithDoctorInfo>> GetAppointmentsByPatientIdAsync(string patientId)
+		public async Task<List<BookedTimeSlotDetail>> GetBookedTimeSlotsByPatientIdAsync(string patientId)
 		{
-			var appointments = await _context.Appointments
-				.Where(a => a.PatientId == Guid.Parse(patientId))
+			var slots = await _context.TimeSlots
+				.Where(s => s.PatientId == Guid.Parse(patientId))
 				.ToListAsync();
 
-			var result = new List<AppointmentWithDoctorInfo>();
+			var result = new List<BookedTimeSlotDetail>();
 
-			foreach (var appointment in appointments)
+			foreach (var slot in slots)
 			{
 				// Lấy thông tin doctor từ DoctorService
-				var doctor = await _doctorClient.GetDoctorByIdAsync(appointment.DoctorId.ToString());
+				var dailySchedule = await _context.DailySchedules.FindAsync(slot.DailyScheduleId);
+				var doctor = await _doctorClient.GetDoctorByIdAsync(dailySchedule.DoctorId.ToString());
 
-				result.Add(new AppointmentWithDoctorInfo
+				result.Add(new BookedTimeSlotDetail
 				{
-					Id = appointment.Id,
-					PatientId = appointment.PatientId,
-					DoctorId = appointment.DoctorId,
+					SlotId = slot.Id,
+					DoctorId = dailySchedule.DoctorId,
 					DoctorName = doctor?.FullName ?? "Unknown Doctor",
-					TimeSlot = appointment.TimeSlot,
-					Status = appointment.Status
+					StartTime = slot.StartTime,
+					EndTime = slot.EndTime,
+					Status = slot.Status,
+					PatientId = slot.PatientId
 				});
 			}
 

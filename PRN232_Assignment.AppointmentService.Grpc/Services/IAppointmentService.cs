@@ -1,5 +1,5 @@
-﻿using PRN232_Assignment.AppointmentService.Grpc.DTO;
-using PRN232_Assignment.AppointmentService.Grpc.Entities;
+﻿using PRN232_Assignment.AppointmentService.Grpc.Entities;
+using PRN232_Assignment.AppointmentService.Grpc.DTO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +13,6 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 		Task<string> CreateScheduleAsync(string doctorId, string date);
 		Task<List<TimeSlot>> GetAvailableSlotsAsync(string doctorId, string date);
 		Task<string> BookSlotAsync(string slotId, string patientId);
-		Task<List<AppointmentWithDoctorInfo>> GetAppointmentsByPatientIdAsync(string patientId);
-    }
+		Task<List<BookedTimeSlotDetail>> GetBookedTimeSlotsByPatientIdAsync(string patientId);
+	}
 }

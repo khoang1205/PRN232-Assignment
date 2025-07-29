@@ -19,27 +19,26 @@ namespace PRN232_Assignment.UserService.Api.Controllers
         {
             try
             {
-                var request = new GetAppointmentsByPatientIdRequest
+                var request = new GetBookedTimeSlotsByPatientIdRequest
                 {
                     PatientId = patientId
                 };
 
-                var response = await _appointmentClient.GetAppointmentsByPatientIdAsync(request);
+                var response = await _appointmentClient.GetBookedTimeSlotsByPatientIdAsync(request);
 
                 return Ok(new
                 {
                     Success = true,
-                    Message = "Lấy danh sách appointments thành công",
-                    Data = response.Appointments.Select(a => new
+                    Data = response.Slots.Select(s => new
                     {
-                        AppointmentId = a.AppointmentId,
-                        PatientId = a.PatientId,
-                        DoctorId = a.DoctorId,
-                        DoctorName = a.DoctorName,
-                        TimeSlot = a.TimeSlot,
-                        Status = a.Status
-                    }).ToList(),
-                    TotalCount = response.Appointments.Count
+                        SlotId = s.SlotId,
+                        DoctorId = s.DoctorId,
+                        DoctorName = s.DoctorName,
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime,
+                        Status = s.Status,
+                        PatientId = s.PatientId
+                    }).ToList()
                 });
             }
             catch (Exception ex)
@@ -52,53 +51,5 @@ namespace PRN232_Assignment.UserService.Api.Controllers
             }
         }
 
-        [HttpGet("patient/{patientId}/summary")]
-        public async Task<IActionResult> GetAppointmentSummary(string patientId)
-        {
-            try
-            {
-                var request = new GetAppointmentsByPatientIdRequest
-                {
-                    PatientId = patientId
-                };
-
-                var response = await _appointmentClient.GetAppointmentsByPatientIdAsync(request);
-
-                var summary = new
-                {
-                    PatientId = patientId,
-                    TotalAppointments = response.Appointments.Count,
-                    PendingAppointments = response.Appointments.Count(a => a.Status == "Pending"),
-                    CompletedAppointments = response.Appointments.Count(a => a.Status == "Completed"),
-                    CancelledAppointments = response.Appointments.Count(a => a.Status == "Cancelled"),
-                    UpcomingAppointments = response.Appointments
-                        .Where(a => DateTime.Parse(a.TimeSlot) > DateTime.Now)
-                        .OrderBy(a => DateTime.Parse(a.TimeSlot))
-                        .Take(5)
-                        .Select(a => new
-                        {
-                            AppointmentId = a.AppointmentId,
-                            DoctorName = a.DoctorName,
-                            TimeSlot = a.TimeSlot,
-                            Status = a.Status
-                        }).ToList()
-                };
-
-                return Ok(new
-                {
-                    Success = true,
-                    Message = "Lấy thống kê appointments thành công",
-                    Data = summary
-                });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new
-                {
-                    Success = false,
-                    Message = $"Lỗi khi lấy thống kê appointments: {ex.Message}"
-                });
-            }
-        }
     }
 } 
