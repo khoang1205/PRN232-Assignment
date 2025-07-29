@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Notification;
 using PRN232_Assignment.AppointmentService.Grpc.Data;
 using PRN232_Assignment.AppointmentService.Grpc.Entities;
+using PRN232_Assignment.AppointmentService.Grpc.DTO;
 using User;
 using AppointmentEntity = PRN232_Assignment.AppointmentService.Grpc.Entities.Appointment;
 
@@ -13,15 +14,18 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         private readonly UserService.UserServiceClient _userClient;
         private readonly NotificationService.NotificationServiceClient _notificationClient;
         private readonly ApplicationDbContext _context;
+        private readonly DoctorClient _doctorClient;
 
-        public AppointmentBusinessService(
+        		public AppointmentBusinessService(
             ApplicationDbContext context,
             UserService.UserServiceClient userClient,
-            NotificationService.NotificationServiceClient notificationClient)
+            NotificationService.NotificationServiceClient notificationClient,
+            DoctorClient doctorClient)
         {
             _context = context;
             _userClient = userClient;
             _notificationClient = notificationClient;
+            _doctorClient = doctorClient;
         }
        
 
@@ -130,6 +134,33 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             });
 
             return slot.Id.ToString();
+		}
+
+		public async Task<List<AppointmentWithDoctorInfo>> GetAppointmentsByPatientIdAsync(string patientId)
+		{
+			var appointments = await _context.Appointments
+				.Where(a => a.PatientId == Guid.Parse(patientId))
+				.ToListAsync();
+
+			var result = new List<AppointmentWithDoctorInfo>();
+
+			foreach (var appointment in appointments)
+			{
+				// Lấy thông tin doctor từ DoctorService
+				var doctor = await _doctorClient.GetDoctorByIdAsync(appointment.DoctorId.ToString());
+
+				result.Add(new AppointmentWithDoctorInfo
+				{
+					Id = appointment.Id,
+					PatientId = appointment.PatientId,
+					DoctorId = appointment.DoctorId,
+					DoctorName = doctor?.FullName ?? "Unknown Doctor",
+					TimeSlot = appointment.TimeSlot,
+					Status = appointment.Status
+				});
+			}
+
+			return result;
 		}
 
 	}
