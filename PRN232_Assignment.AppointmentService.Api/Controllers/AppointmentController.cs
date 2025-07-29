@@ -16,28 +16,29 @@ namespace PRN232_Assignment.AppointmentService.Api.Controllers
         }
 
         [HttpGet("patient/{patientId}")]
-        public async Task<IActionResult> GetAppointmentsByPatientId(string patientId)
+        public async Task<IActionResult> GetBookedTimeSlotsByPatientId(string patientId)
         {
             try
             {
-                var request = new GetAppointmentsByPatientIdRequest
+                var request = new GetBookedTimeSlotsByPatientIdRequest
                 {
                     PatientId = patientId
                 };
 
-                var response = await _appointmentClient.GetAppointmentsByPatientIdAsync(request);
+                var response = await _appointmentClient.GetBookedTimeSlotsByPatientIdAsync(request);
 
                 return Ok(new
                 {
                     Success = true,
-                    Data = response.Appointments.Select(a => new
+                    Data = response.Slots.Select(s => new
                     {
-                        AppointmentId = a.AppointmentId,
-                        PatientId = a.PatientId,
-                        DoctorId = a.DoctorId,
-                        DoctorName = a.DoctorName,
-                        TimeSlot = a.TimeSlot,
-                        Status = a.Status
+                        SlotId = s.SlotId,
+                        DoctorId = s.DoctorId,
+                        DoctorName = s.DoctorName,
+                        StartTime = s.StartTime,
+                        EndTime = s.EndTime,
+                        Status = s.Status,
+                        PatientId = s.PatientId
                     }).ToList()
                 });
             }

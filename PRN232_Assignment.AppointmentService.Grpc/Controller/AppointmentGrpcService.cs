@@ -64,28 +64,29 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
 			return new AppointmentResponse { AppointmentId = id, Status = "Booked" };
 		}
 
-		public override async Task<GetAppointmentsByPatientIdResponse> GetAppointmentsByPatientId(GetAppointmentsByPatientIdRequest request, ServerCallContext context)
+		public override async Task<GetBookedTimeSlotsByPatientIdResponse> GetBookedTimeSlotsByPatientId(GetBookedTimeSlotsByPatientIdRequest request, ServerCallContext context)
 		{
 			try
 			{
-				var appointments = await _service.GetAppointmentsByPatientIdAsync(request.PatientId);
-				var response = new GetAppointmentsByPatientIdResponse();
+				var slots = await _service.GetBookedTimeSlotsByPatientIdAsync(request.PatientId);
+				var response = new GetBookedTimeSlotsByPatientIdResponse();
 				
-				response.Appointments.AddRange(appointments.Select(a => new AppointmentDetail
+				response.Slots.AddRange(slots.Select(s => new BookedTimeSlotDetail
 				{
-					AppointmentId = a.Id.ToString(),
-					PatientId = a.PatientId.ToString(),
-					DoctorId = a.DoctorId.ToString(),
-					DoctorName = a.DoctorName,
-					TimeSlot = a.TimeSlot.ToString("yyyy-MM-dd HH:mm"),
-					Status = a.Status
+					SlotId = s.SlotId.ToString(),
+					DoctorId = s.DoctorId.ToString(),
+					DoctorName = s.DoctorName,
+					StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
+					EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
+					Status = s.Status,
+					PatientId = s.PatientId?.ToString() ?? ""
 				}));
 
 				return response;
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine($"[ERROR] GetAppointmentsByPatientId: {ex.Message}");
+				Console.WriteLine($"[ERROR] GetBookedTimeSlotsByPatientId: {ex.Message}");
 				throw new RpcException(new Status(StatusCode.Internal, ex.Message));
 			}
 		}
