@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Notification;
 using PRN232_Assignment.AppointmentService.Grpc.Data;
 using PRN232_Assignment.AppointmentService.Grpc.Entities;
+using PRN232_Assignment.AppointmentService.Grpc.DTO;
 using User;
 using AppointmentEntity = PRN232_Assignment.AppointmentService.Grpc.Entities.Appointment;
 
@@ -13,15 +14,18 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         private readonly UserService.UserServiceClient _userClient;
         private readonly NotificationService.NotificationServiceClient _notificationClient;
         private readonly ApplicationDbContext _context;
+        private readonly DoctorClient _doctorClient;
 
-        public AppointmentBusinessService(
+        		public AppointmentBusinessService(
             ApplicationDbContext context,
             UserService.UserServiceClient userClient,
-            NotificationService.NotificationServiceClient notificationClient)
+            NotificationService.NotificationServiceClient notificationClient,
+            DoctorClient doctorClient)
         {
             _context = context;
             _userClient = userClient;
             _notificationClient = notificationClient;
+            _doctorClient = doctorClient;
         }
        
 
@@ -131,16 +135,35 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 
             return slot.Id.ToString();
 		}
-        public async Task<string> GetDoctorIdFromSlotAsync(string slotId)
-        {
-            var slot = await _context.TimeSlots
-                .Include(s => s.DailySchedule)
-                .FirstOrDefaultAsync(s => s.Id.ToString() == slotId);
 
-            if (slot == null || slot.DailySchedule == null)
-                throw new Exception("Slot không hợp lệ hoặc không có lịch");
+		public async Task<List<BookedTimeSlotDetail>> GetBookedTimeSlotsByPatientIdAsync(string patientId)
+		{
+			var slots = await _context.TimeSlots
+				.Where(s => s.PatientId == Guid.Parse(patientId))
+				.ToListAsync();
 
-            return slot.DailySchedule.DoctorId.ToString(); // hoặc .Id nếu kiểu số
-        }
-    }
+			var result = new List<BookedTimeSlotDetail>();
+
+			foreach (var slot in slots)
+			{
+				// Lấy thông tin doctor từ DoctorService
+				var dailySchedule = await _context.DailySchedules.FindAsync(slot.DailyScheduleId);
+				var doctor = await _doctorClient.GetDoctorByIdAsync(dailySchedule.DoctorId.ToString());
+
+				result.Add(new BookedTimeSlotDetail
+				{
+					SlotId = slot.Id,
+					DoctorId = dailySchedule.DoctorId,
+					DoctorName = doctor?.FullName ?? "Unknown Doctor",
+					StartTime = slot.StartTime,
+					EndTime = slot.EndTime,
+					Status = slot.Status,
+					PatientId = slot.PatientId
+				});
+			}
+
+			return result;
+		}
+
+	}
 }

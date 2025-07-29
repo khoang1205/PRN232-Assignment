@@ -69,5 +69,32 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
             return new AppointmentResponse { AppointmentId = id, Status = "Booked" };
 		}
 
+		public override async Task<GetBookedTimeSlotsByPatientIdResponse> GetBookedTimeSlotsByPatientId(GetBookedTimeSlotsByPatientIdRequest request, ServerCallContext context)
+		{
+			try
+			{
+				var slots = await _service.GetBookedTimeSlotsByPatientIdAsync(request.PatientId);
+				var response = new GetBookedTimeSlotsByPatientIdResponse();
+				
+				response.Slots.AddRange(slots.Select(s => new BookedTimeSlotDetail
+				{
+					SlotId = s.SlotId.ToString(),
+					DoctorId = s.DoctorId.ToString(),
+					DoctorName = s.DoctorName,
+					StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
+					EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
+					Status = s.Status,
+					PatientId = s.PatientId?.ToString() ?? ""
+				}));
+
+				return response;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"[ERROR] GetBookedTimeSlotsByPatientId: {ex.Message}");
+				throw new RpcException(new Status(StatusCode.Internal, ex.Message));
+			}
+		}
+
 	}
 }

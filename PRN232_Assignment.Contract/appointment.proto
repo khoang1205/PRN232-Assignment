@@ -4,9 +4,9 @@ package appointment;
 
 service AppointmentService {
  rpc CreateSchedule (CreateScheduleRequest) returns (ScheduleResponse);
-rpc GetAvailableSlots (GetSlotsRequest) returns (GetSlotsReply);
-rpc BookSlot (BookSlotRequest) returns (AppointmentResponse);
-
+ rpc GetAvailableSlots (GetSlotsRequest) returns (GetSlotsReply);
+ rpc BookSlot (BookSlotRequest) returns (AppointmentResponse);
+ rpc GetBookedTimeSlotsByPatientId (GetBookedTimeSlotsByPatientIdRequest) returns (GetBookedTimeSlotsByPatientIdResponse);
 }
 
 message CreateScheduleRequest {
@@ -41,4 +41,22 @@ message GetSlotsReply {
 message BookSlotRequest {
   string slotId = 1;
   string patientId = 2;
+}
+
+message GetBookedTimeSlotsByPatientIdRequest {
+  string patientId = 1;
+}
+
+message BookedTimeSlotDetail {
+  string slotId = 1;
+  string doctorId = 2;
+  string doctorName = 3;
+  string startTime = 4;
+  string endTime = 5;
+  string status = 6;
+  string patientId = 7;
+}
+
+message GetBookedTimeSlotsByPatientIdResponse {
+  repeated BookedTimeSlotDetail slots = 1;
 }
