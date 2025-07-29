@@ -8,14 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-	 
-		  <PackageReference Include="Google.Protobuf" Version="3.31.1" />
-		  <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
-		  <PackageReference Include="Grpc.Core" Version="2.46.6" />
-		  <PackageReference Include="Grpc.Tools" Version="2.72.0">
-			  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			  <PrivateAssets>all</PrivateAssets>
-		  </PackageReference>
+
+	  <PackageReference Include="Google.Protobuf" Version="3.31.1" />
+	  <PackageReference Include="Grpc.AspNetCore" Version="2.71.0" />
+	  <PackageReference Include="Grpc.Core" Version="2.46.6" />
+	  <PackageReference Include="Grpc.Tools" Version="2.72.0">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+	  </PackageReference>
 	<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
 	<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.8" />
 	<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
@@ -24,6 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PRN232_Assignment.UserService.Service\PRN232_Assignment.UserService.Service.csproj" />
+    <ProjectReference Include="..\PRN232_Assignment.Contract\PRN232_Assignment.Contract.csproj" />
+	  <Protobuf Include="..\PRN232_Assignment.Contract\appointment.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

@@ -9,7 +9,6 @@ using PRN232_Assignment.UserService.Service.IService;
 using PRN232_Assignment.UserService.Service.Mappings;
 using System.Text;
 using System.Text.Json.Serialization;
-using PRN232_Assignment.AppointmentService.Grpc.Services;
 
 namespace PRN232_Assignment.UserService.Api
 {
@@ -40,6 +39,12 @@ namespace PRN232_Assignment.UserService.Api
             builder.Services.AddScoped<IUserService, PRN232_Assignment.UserService.Service.Service.UserService>();
 
             builder.Services.AddAutoMapper(typeof(MappingProfile));
+
+            // Configure gRPC client for AppointmentService
+            builder.Services.AddGrpcClient<Appointment.AppointmentService.AppointmentServiceClient>(options =>
+            {
+                options.Address = new Uri("https://localhost:7074"); // gRPC service address
+            });
 
             // Setup JWT
             builder.Services
