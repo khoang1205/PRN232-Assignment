@@ -9,12 +9,12 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
     {
         private readonly DoctorClient _doctorClient;
         private readonly IAppointmentService _service;
-       
+
         public AppointmentGrpcService(IAppointmentService service, DoctorClient doctorClient)
         {
             _service = service;
             _doctorClient = doctorClient;
-           
+
         }
 
         public override async Task<ScheduleResponse> CreateSchedule(CreateScheduleRequest request, ServerCallContext context)
@@ -45,54 +45,76 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
         }
 
         public override async Task<GetSlotsReply> GetAvailableSlots(GetSlotsRequest request, ServerCallContext context)
-		{
-			var slots = await _service.GetAvailableSlotsAsync(request.DoctorId, request.Date);
-			var reply = new GetSlotsReply();
-			reply.Slots.AddRange(slots.Select(s => new TimeSlotReply
-			{
-				SlotId = s.Id.ToString(),
-				StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
-				EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
-				IsBooked = s.PatientId != null
-			}));
-			return reply;
-		}
-        
-		public override async Task<AppointmentResponse> BookSlot(BookSlotRequest request, ServerCallContext context)
-		{
-			var id = await _service.BookSlotAsync(request.SlotId, request.PatientId);
-            var doctorId = await _service.GetDoctorIdFromSlotAsync(request.SlotId);
+        {
+            var slots = await _service.GetAvailableSlotsAsync(request.DoctorId, request.Date);
+            var reply = new GetSlotsReply();
+            reply.Slots.AddRange(slots.Select(s => new TimeSlotReply
+            {
+                SlotId = s.Id.ToString(),
+                StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
+                EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
+                IsBooked = s.PatientId != null
+            }));
+            return reply;
+        }
 
-           
+        public override async Task<AppointmentResponse> BookSlot(BookSlotRequest request, ServerCallContext context)
+        {
+            var id = await _service.BookSlotAsync(request.SlotId, request.PatientId);
+            // var doctorId = await _service.GetDoctorIdFromSlotAsync(request.SlotId);
+
+
             return new AppointmentResponse { AppointmentId = id, Status = "Booked" };
-		}
+        }
 
-		public override async Task<GetBookedTimeSlotsByPatientIdResponse> GetBookedTimeSlotsByPatientId(GetBookedTimeSlotsByPatientIdRequest request, ServerCallContext context)
-		{
-			try
-			{
-				var slots = await _service.GetBookedTimeSlotsByPatientIdAsync(request.PatientId);
-				var response = new GetBookedTimeSlotsByPatientIdResponse();
-				
-				response.Slots.AddRange(slots.Select(s => new BookedTimeSlotDetail
-				{
-					SlotId = s.SlotId.ToString(),
-					DoctorId = s.DoctorId.ToString(),
-					DoctorName = s.DoctorName,
-					StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
-					EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
-					Status = s.Status,
-					PatientId = s.PatientId?.ToString() ?? ""
-				}));
+        public override async Task<GetBookedTimeSlotsByPatientIdResponse> GetBookedTimeSlotsByPatientId(GetBookedTimeSlotsByPatientIdRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var slots = await _service.GetBookedTimeSlotsByPatientIdAsync(request.PatientId);
+                var response = new GetBookedTimeSlotsByPatientIdResponse();
 
-				return response;
-			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"[ERROR] GetBookedTimeSlotsByPatientId: {ex.Message}");
-				throw new RpcException(new Status(StatusCode.Internal, ex.Message));
-			}
-		}
+                response.Slots.AddRange(slots.Select(s => new BookedTimeSlotDetail
+                {
+                    SlotId = s.SlotId.ToString(),
+                    DoctorId = s.DoctorId.ToString(),
+                    DoctorName = s.DoctorName,
+                    StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
+                    EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
+                    Status = s.Status,
+                    PatientId = s.PatientId?.ToString() ?? ""
+                }));
 
-	}
+                return response;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] GetBookedTimeSlotsByPatientId: {ex.Message}");
+                throw new RpcException(new Status(StatusCode.Internal, ex.Message));
+            }
+        }
+
+        public override async Task<GetSlotsReply> GetBookedSlotsByDoctor(GetBookedSlotsByDoctorRequest request, ServerCallContext context)
+        {
+            try
+            {
+                var slots = await _service.GetBookedSlotsByDoctorAsync(request.DoctorId, request.Date);
+                var reply = new GetSlotsReply();
+                reply.Slots.AddRange(slots.Select(s => new TimeSlotReply
+                {
+                    SlotId = s.Id.ToString(),
+                    StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
+                    EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
+                    IsBooked = true
+                }));
+                return reply;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[ERROR] GetBookedSlotsByDoctor: {ex.Message}");
+                throw new RpcException(new Status(StatusCode.Internal, ex.Message));
+            }
+        }
+
+    }
 }

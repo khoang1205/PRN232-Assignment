@@ -4,7 +4,8 @@ namespace PRN232_Assignment.DoctorService.Repository.IRepository
 {
     public interface IDoctorRepository
     {
-        Task<List<Doctor>> GetAllAsync();
+        Task<List<Doctor>> GetPaginatedAsync(int pageIndex, int pageSize);
+        Task<long> CountAsync();
         Task<Doctor?> GetByIdAsync(string id);
         Task CreateAsync(Doctor doctor);
         Task<bool> UpdateAsync(string id, Doctor doctor);

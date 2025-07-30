@@ -18,9 +18,9 @@ namespace PRN232_Assignment.DoctorService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] int pageIndex = 1, [FromQuery] int pageSize = 10)
         {
-            var doctors = await _service.GetAllAsync();
+            var doctors = await _service.GetPaginatedAsync(pageIndex, pageSize);
             return Ok(doctors);
         }
 

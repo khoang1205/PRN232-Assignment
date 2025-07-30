@@ -11,7 +11,7 @@ namespace PRN232_Assignment.DoctorService.Service.IService
 {
     public interface IDoctorService
     {
-        Task<List<Doctor>> GetAllAsync();
+        Task<PagedResult<Doctor>> GetPaginatedAsync(int pageIndex, int pageSize);
         Task<Doctor?> GetByIdAsync(string id);
         Task<Doctor> CreateAsync(DoctorCreateRequest doctor);
         Task<bool> UpdateAsync(string id, DoctorUpdateRequest doctor);

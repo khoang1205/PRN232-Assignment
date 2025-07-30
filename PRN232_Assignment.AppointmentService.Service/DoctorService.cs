@@ -27,11 +27,20 @@ namespace PRN232_Assignment.DoctorService.Service
             _configuration = configuration;
         }
 
-        public async Task<List<Doctor>> GetAllAsync()
+        public async Task<PagedResult<Doctor>> GetPaginatedAsync(int pageIndex, int pageSize)
         {
-            return await _repo.GetAllAsync();
-        }
+            var total = await _repo.CountAsync();
+            var items = await _repo.GetPaginatedAsync(pageIndex, pageSize);
 
+            return new PagedResult<Doctor>
+            {
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                TotalItems = total,
+                Items = items
+            };
+        }
+        
         public async Task<Doctor?> GetByIdAsync(string id)
         {
             return await _repo.GetByIdAsync(id);

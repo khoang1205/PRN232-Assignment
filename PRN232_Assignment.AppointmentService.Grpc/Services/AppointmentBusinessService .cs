@@ -16,101 +16,99 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         private readonly ApplicationDbContext _context;
         private readonly DoctorClient _doctorClient;
 
-        		public AppointmentBusinessService(
-            ApplicationDbContext context,
-            UserService.UserServiceClient userClient,
-            NotificationService.NotificationServiceClient notificationClient,
-            DoctorClient doctorClient)
+        public AppointmentBusinessService(
+                ApplicationDbContext context,
+                UserService.UserServiceClient userClient,
+                NotificationService.NotificationServiceClient notificationClient,
+                DoctorClient doctorClient)
         {
             _context = context;
             _userClient = userClient;
             _notificationClient = notificationClient;
             _doctorClient = doctorClient;
         }
-       
-
 
         public async Task<string> CreateScheduleAsync(string doctorId, string dateStr)
-		{
-			var date = DateTime.Parse(dateStr);
-			if (date.DayOfWeek == DayOfWeek.Sunday)
-				throw new Exception("Không thể tạo lịch vào Chủ Nhật.");
-            // 👇 Hardcode tạm GUID để test nếu chưa có DoctorId thật
-          
+        {
+            var date = DateTime.Parse(dateStr);
+            if (date.DayOfWeek == DayOfWeek.Sunday)
+                throw new Exception("Không thể tạo lịch vào Chủ Nhật.");
+
             var schedule = new DailySchedule
-			{
-				Id = Guid.NewGuid(),
-				//DoctorId = Guid.Parse(doctorId),
-				DoctorId = doctorId,
-				Date = date,
-				TimeSlots = GenerateTimeSlots(date)
-			};
+            {
+                Id = Guid.NewGuid(),
+                //DoctorId = Guid.Parse(doctorId),
+                DoctorId = doctorId,
+                Date = date,
+                TimeSlots = GenerateTimeSlots(date)
+            };
 
-			_context.DailySchedules.Add(schedule);
-			await _context.SaveChangesAsync();
+            _context.DailySchedules.Add(schedule);
+            await _context.SaveChangesAsync();
 
-			return schedule.Id.ToString();
-		}
+            return schedule.Id.ToString();
+        }
 
-		private List<TimeSlot> GenerateTimeSlots(DateTime date)
-		{
-			var slots = new List<TimeSlot>();
-			DateTime[] periods = { date.Date.AddHours(8), date.Date.AddHours(13) };
+        private List<TimeSlot> GenerateTimeSlots(DateTime date)
+        {
+            var slots = new List<TimeSlot>();
+            DateTime[] periods = { date.Date.AddHours(8), date.Date.AddHours(13) };
 
-			foreach (var start in periods)
-			{
-				for (int i = 0; i < 12; i++)
-				{
-					var slotStart = start.AddMinutes(i * 20);
-					slots.Add(new TimeSlot
-					{
-						Id = Guid.NewGuid(),
-						StartTime = slotStart,
-						EndTime = slotStart.AddMinutes(20),
-						Status = "Available"
-					});
-				}
-			}
+            foreach (var start in periods)
+            {
+                for (int i = 0; i < 12; i++)
+                {
+                    var slotStart = start.AddMinutes(i * 20);
+                    slots.Add(new TimeSlot
+                    {
+                        Id = Guid.NewGuid(),
+                        StartTime = slotStart,
+                        EndTime = slotStart.AddMinutes(20),
+                        Status = "Available"
+                    });
+                }
+            }
 
-			return slots;
-		}
-		public async Task<List<TimeSlot>> GetAvailableSlotsAsync(string doctorId, string dateStr)
-		{
-			var date = DateTime.Parse(dateStr);
-			var schedule = await _context.DailySchedules
-				.Include(s => s.TimeSlots)
-				.FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date.Date == date.Date);
+            return slots;
+        }
+        public async Task<List<TimeSlot>> GetAvailableSlotsAsync(string doctorId, string dateStr)
+        {
+            var date = DateTime.Parse(dateStr);
+            var schedule = await _context.DailySchedules
+                .Include(s => s.TimeSlots)
+                .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date.Date == date.Date);
 
-			return schedule?.TimeSlots
-				.Where(s => s.PatientId == null)
-				.ToList() ?? new List<TimeSlot>();
-		}
-		public async Task<string> BookSlotAsync(string slotId, string patientId)
-		{
-			var slot = await _context.TimeSlots
-				.Include(s => s.DailySchedule)
-				.FirstOrDefaultAsync(s => s.Id == Guid.Parse(slotId));
+            return schedule?.TimeSlots
+                .Where(s => s.PatientId == null)
+                .ToList() ?? new List<TimeSlot>();
+        }
 
-			if (slot == null || slot.PatientId != null)
-				throw new Exception("Slot đã được đặt.");
+        public async Task<string> BookSlotAsync(string slotId, string patientId)
+        {
+            var slot = await _context.TimeSlots
+                .Include(s => s.DailySchedule)
+                .FirstOrDefaultAsync(s => s.Id == Guid.Parse(slotId));
 
-			var alreadyBooked = await _context.TimeSlots
-				.AnyAsync(s =>
-					s.PatientId == Guid.Parse(patientId) &&
-					s.DailySchedule.DoctorId == slot.DailySchedule.DoctorId &&
-					s.DailySchedule.Date == slot.DailySchedule.Date);
+            if (slot == null || slot.PatientId != null)
+                throw new Exception("Slot đã được đặt.");
 
-			if (alreadyBooked)
-				throw new Exception("Mỗi bệnh nhân chỉ được đặt 1 slot/bác sĩ/ngày.");
+            var alreadyBooked = await _context.TimeSlots
+                .AnyAsync(s =>
+                    s.PatientId == Guid.Parse(patientId) &&
+                    s.DailySchedule.DoctorId == slot.DailySchedule.DoctorId &&
+                    s.DailySchedule.Date == slot.DailySchedule.Date);
 
-			slot.PatientId = Guid.Parse(patientId);
-			slot.Status = "Booked";
-			await _context.SaveChangesAsync();
+            if (alreadyBooked)
+                throw new Exception("Mỗi bệnh nhân chỉ được đặt 1 slot/bác sĩ/ngày.");
+
+            slot.PatientId = Guid.Parse(patientId);
+            slot.Status = "Booked";
+            await _context.SaveChangesAsync();
             var patient = await _userClient.GetUserAsync(new UserIdRequest
             {
                 Id = patientId
             });
-           
+
             var doctor = await _userClient.GetUserAsync(new UserIdRequest
             {
                 Id = slot.DailySchedule.DoctorId
@@ -124,43 +122,43 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
                 Type = "Appointment",
                 Message = $"Bạn đã đặt lịch với {doctorName} lúc {slot.StartTime:HH:mm dd/MM}"
             });
-           
+
             //gui noti cho bac si
             await _notificationClient.SendNotificationAsync(new NotificationRequest
             {
-                UserId = slot.DailySchedule.DoctorId, 
+                UserId = slot.DailySchedule.DoctorId,
                 Type = "Appointment",
                 Message = $"Bệnh nhân {patientName} đã đặt lịch khám lúc {slot.StartTime:HH:mm dd/MM}"
             });
 
             return slot.Id.ToString();
-		}
+        }
 
-		public async Task<List<BookedTimeSlotDetail>> GetBookedTimeSlotsByPatientIdAsync(string patientId)
-		{
-			var slots = await _context.TimeSlots
-				.Where(s => s.PatientId == Guid.Parse(patientId))
-				.ToListAsync();
+        public async Task<List<BookedTimeSlotDetail>> GetBookedTimeSlotsByPatientIdAsync(string patientId)
+        {
+            var slots = await _context.TimeSlots
+                .Where(s => s.PatientId == Guid.Parse(patientId))
+                .ToListAsync();
 
-			var result = new List<BookedTimeSlotDetail>();
+            var result = new List<BookedTimeSlotDetail>();
 
-			foreach (var slot in slots)
-			{
-				// Lấy thông tin doctor từ DoctorService
-				var dailySchedule = await _context.DailySchedules.FindAsync(slot.DailyScheduleId);
-				var doctor = await _doctorClient.GetDoctorByIdAsync(dailySchedule.DoctorId.ToString());
+            foreach (var slot in slots)
+            {
+                // Lấy thông tin doctor từ DoctorService
+                var dailySchedule = await _context.DailySchedules.FindAsync(slot.DailyScheduleId);
+                var doctor = await _doctorClient.GetDoctorByIdAsync(dailySchedule.DoctorId.ToString());
 
-				result.Add(new BookedTimeSlotDetail
-				{
-					SlotId = slot.Id,
-					DoctorId = dailySchedule.DoctorId,
-					DoctorName = doctor?.FullName ?? "Unknown Doctor",
-					StartTime = slot.StartTime,
-					EndTime = slot.EndTime,
-					Status = slot.Status,
-					PatientId = slot.PatientId
-				});
-			}
+                result.Add(new BookedTimeSlotDetail
+                {
+                    SlotId = slot.Id,
+                    DoctorId = dailySchedule.DoctorId,
+                    DoctorName = doctor?.FullName ?? "Unknown Doctor",
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    Status = slot.Status,
+                    PatientId = slot.PatientId
+                });
+            }
 
 			return result;
 		}
@@ -178,5 +176,25 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         }
 
 
-	}
+        // Hàm để lấy các slot đã đặt của bác sĩ
+        public async Task<List<TimeSlot>> GetBookedSlotsByDoctorAsync(string doctorId, string dateStr)
+        {
+            var date = DateTime.Parse(dateStr);
+
+            var schedule = await _context.DailySchedules
+                .Include(s => s.TimeSlots)
+                .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date.Date == date.Date);
+
+            if (schedule == null)
+                return new List<TimeSlot>();
+
+            var bookedSlots = schedule.TimeSlots
+                .Where(s => s.PatientId != null)
+                .OrderBy(s => s.StartTime)
+                .ToList();
+
+            return bookedSlots;
+        }
+
+    }
 }

@@ -14,8 +14,19 @@ namespace PRN232_Assignment.DoctorService.Repository
             _collection = db.GetCollection<Doctor>("Doctors");
         }
 
-        public Task<List<Doctor>> GetAllAsync() =>
-            _collection.Find(_ => true).ToListAsync();
+        public async Task<List<Doctor>> GetPaginatedAsync(int pageIndex, int pageSize)
+        {
+            var skip = (pageIndex - 1) * pageSize;
+            return await _collection.Find(d => true)
+                                    .Skip(skip)
+                                    .Limit(pageSize)
+                                    .ToListAsync();
+        }
+
+        public async Task<long> CountAsync()
+        {
+            return await _collection.CountDocumentsAsync(d => true);
+        }
 
         public Task CreateAsync(Doctor doctor) =>
             _collection.InsertOneAsync(doctor);

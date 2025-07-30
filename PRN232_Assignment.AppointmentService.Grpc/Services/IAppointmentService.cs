@@ -14,6 +14,8 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 		Task<List<TimeSlot>> GetAvailableSlotsAsync(string doctorId, string date);
 		Task<string> BookSlotAsync(string slotId, string patientId);
 		Task<List<BookedTimeSlotDetail>> GetBookedTimeSlotsByPatientIdAsync(string patientId);
+        Task<List<TimeSlot>> GetBookedSlotsByDoctorAsync(string doctorId, string dateStr);
+    
 
         Task<string> GetDoctorIdFromSlotAsync(string slotId);
     }
