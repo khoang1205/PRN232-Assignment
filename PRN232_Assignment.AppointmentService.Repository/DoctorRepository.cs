@@ -62,5 +62,9 @@ namespace PRN232_Assignment.DoctorService.Repository
             return await _collection.Find(filter).ToListAsync();
         }
 
+        public async Task<Doctor?> GetByEmailAsync(string email)
+        {
+            return await _collection.Find(d => d.Email == email).FirstOrDefaultAsync();
+        }
     }
 }

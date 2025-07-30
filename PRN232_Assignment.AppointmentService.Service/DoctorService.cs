@@ -1,10 +1,16 @@
 ﻿using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson;
 using PRN232_Assignment.DoctorService.Repository.Entities;
 using PRN232_Assignment.DoctorService.Repository.IRepository;
 using PRN232_Assignment.DoctorService.Service.IService;
 using PRN232_Assignment.DoctorService.Service.Models.Request;
+using PRN232_Assignment.DoctorService.Service.Models.Response;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace PRN232_Assignment.DoctorService.Service
 {
@@ -12,11 +18,13 @@ namespace PRN232_Assignment.DoctorService.Service
     {
         private readonly IDoctorRepository _repo;
         private readonly Cloudinary _cloudinary;
+        private readonly IConfiguration _configuration;
 
-        public DoctorService(IDoctorRepository repo, Cloudinary cloudinary)
+        public DoctorService(IDoctorRepository repo, Cloudinary cloudinary, IConfiguration configuration)
         {
             _repo = repo;
             _cloudinary = cloudinary;
+            _configuration = configuration;
         }
 
         public async Task<List<Doctor>> GetAllAsync()
@@ -129,5 +137,56 @@ namespace PRN232_Assignment.DoctorService.Service
         {
             return await _repo.SearchAsync(name, specialty);
         }
+
+        public async Task<LoginResponse?> LoginAsync(DoctorLoginRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.Email) || string.IsNullOrWhiteSpace(request.Password))
+                return null;
+
+            var normalizedEmail = request.Email.Trim().ToLower();
+            var doctor = await _repo.GetByEmailAsync(normalizedEmail);
+
+            if (doctor == null || doctor.Password != request.Password)
+                return null;
+
+            var token = GenerateJwtToken(doctor);
+
+            return new LoginResponse
+            {
+                Token = token
+            };
+        }
+
+        private string GenerateJwtToken(Doctor doctor)
+        {
+            var secretKey = _configuration["JwtSettings:SecretKey"];
+            var issuer = _configuration["JwtSettings:Issuer"];
+            var audience = _configuration["JwtSettings:Audience"];
+            var expireDays = int.Parse(_configuration["JwtSettings:ExpireDays"]!);
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, doctor.Id),
+                new Claim(ClaimTypes.Name, doctor.FullName),
+                new Claim(ClaimTypes.Email, doctor.Email)
+            };
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddDays(expireDays),
+                Issuer = issuer,
+                Audience = audience,
+                SigningCredentials = creds
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
     }
 }

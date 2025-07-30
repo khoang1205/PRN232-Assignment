@@ -1,10 +1,13 @@
 ﻿using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using PRN232_Assignment.DoctorService.Repository;
 using PRN232_Assignment.DoctorService.Repository.Entities;
 using PRN232_Assignment.DoctorService.Repository.IRepository;
 using PRN232_Assignment.DoctorService.Service;
 using PRN232_Assignment.DoctorService.Service.IService;
+using System.Text;
 Console.OutputEncoding = System.Text.Encoding.UTF8;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,6 +59,30 @@ builder.Services.AddCors(options =>
               .AllowAnyHeader();
     });
 });
+
+// ======================================================================================================== //
+
+// JWT
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["JwtSettings:Issuer"],
+        ValidAudience = builder.Configuration["JwtSettings:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtSettings:SecretKey"]))
+    };
+});
+
+// ======================================================================================================== //
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

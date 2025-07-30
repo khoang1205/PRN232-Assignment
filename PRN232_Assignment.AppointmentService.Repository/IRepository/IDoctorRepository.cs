@@ -10,5 +10,7 @@ namespace PRN232_Assignment.DoctorService.Repository.IRepository
         Task<bool> UpdateAsync(string id, Doctor doctor);
         Task<bool> DeleteAsync(string id);
         Task<List<Doctor>> SearchAsync(string? name, string? specialty);
+        Task<Doctor?> GetByEmailAsync(string email);
+
     }
 }

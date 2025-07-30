@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PRN232_Assignment.DoctorService.Repository.Entities;
+using PRN232_Assignment.DoctorService.Service;
 using PRN232_Assignment.DoctorService.Service.IService;
 using PRN232_Assignment.DoctorService.Service.Models.Request;
 
@@ -67,6 +68,16 @@ namespace PRN232_Assignment.DoctorService.Api.Controllers
         public async Task<IActionResult> Search([FromQuery] string? Name, [FromQuery] string? Specialty)
         {
             var result = await _service.SearchAsync(Name, Specialty);
+            return Ok(result);
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] DoctorLoginRequest request)
+        {
+            var result = await _service.LoginAsync(request);
+            if (result == null)
+                return Unauthorized("Invalid email or password");
+
             return Ok(result);
         }
     }
