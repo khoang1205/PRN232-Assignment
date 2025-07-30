@@ -164,6 +164,19 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 
 			return result;
 		}
+        public async Task<string> GetDoctorIdFromSlotAsync(string slotId)
+        {
+            var slot = await _context.TimeSlots
+                .Include(s => s.DailySchedule)
+                .FirstOrDefaultAsync(s => s.Id.ToString() == slotId);
+
+            if (slot == null || slot.DailySchedule == null)
+                throw new Exception("Slot không hợp lệ hoặc không có lịch");
+
+        
+            return slot.DailySchedule.DoctorId.ToString(); // hoặc .Id nếu kiểu số
+        }
+
 
 	}
 }
