@@ -24,6 +24,18 @@ namespace PRN232_Assignment.ApiGateway.Controller
 
             return Ok(new { slots = reply.Slots });
         }
+
+        [HttpGet("booked")]
+        public async Task<IActionResult> GetBookedSlotsByDoctor([FromQuery] string doctorId, [FromQuery] string date)
+        {
+            var reply = await _client.GetBookedSlotsByDoctorAsync(new GetBookedSlotsByDoctorRequest
+            {
+                DoctorId = doctorId,
+                Date = date
+            });
+
+            return Ok(new { slots = reply.Slots });
+        }
     }
 
 }

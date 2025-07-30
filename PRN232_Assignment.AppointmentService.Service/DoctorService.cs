@@ -162,7 +162,8 @@ namespace PRN232_Assignment.DoctorService.Service
 
             return new LoginResponse
             {
-                Token = token
+                Token = token,
+                RoleId = 1
             };
         }
 
@@ -180,7 +181,8 @@ namespace PRN232_Assignment.DoctorService.Service
             {
                 new Claim(ClaimTypes.NameIdentifier, doctor.Id),
                 new Claim(ClaimTypes.Name, doctor.FullName),
-                new Claim(ClaimTypes.Email, doctor.Email)
+                new Claim(ClaimTypes.Email, doctor.Email),
+                new Claim(ClaimTypes.Role, "Doctor")
             };
 
             var tokenDescriptor = new SecurityTokenDescriptor
