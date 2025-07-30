@@ -15,6 +15,9 @@ namespace PRN232_Assignment.DoctorService.Repository.Entities
         [BsonElement("email")]
         public string Email { get; set; } = null!;
 
+        [BsonElement("password")]
+        public string Password { get; set; } = null!;
+
         [BsonElement("specialty")]
         public string Specialty { get; set; } = null!;
 

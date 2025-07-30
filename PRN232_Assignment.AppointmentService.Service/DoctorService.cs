@@ -28,11 +28,11 @@ namespace PRN232_Assignment.DoctorService.Service
         {
             return await _repo.GetByIdAsync(id);
         }
+
         public async Task<Doctor> CreateAsync(DoctorCreateRequest request)
         {
             string? avatarUrl = null;
 
-            // Upload avatar nếu có
             if (request.Avatar != null && request.Avatar.Length > 0)
             {
                 using var stream = request.Avatar.OpenReadStream();
@@ -60,6 +60,7 @@ namespace PRN232_Assignment.DoctorService.Service
                 Id = ObjectId.GenerateNewId().ToString(),
                 FullName = request.FullName.Trim(),
                 Email = request.Email.Trim().ToLower(),
+                Password = request.Password,
                 Specialty = request.Specialty.Trim(),
                 Bio = string.IsNullOrWhiteSpace(request.Bio) ? string.Empty : request.Bio,
                 IsActive = true,
@@ -76,13 +77,24 @@ namespace PRN232_Assignment.DoctorService.Service
             if (existingDoctor == null)
                 return false;
 
-            // Cập nhật các field cơ bản
-            existingDoctor.FullName = request.FullName.Trim();
-            existingDoctor.Email = request.Email.Trim().ToLower();
-            existingDoctor.Specialty = request.Specialty.Trim();
-            existingDoctor.Bio = string.IsNullOrWhiteSpace(request.Bio) ? string.Empty : request.Bio;
+            if (!string.IsNullOrWhiteSpace(request.FullName))
+                existingDoctor.FullName = request.FullName.Trim();
 
-            // Cập nhật avatar nếu có
+            if (!string.IsNullOrWhiteSpace(request.Email))
+                existingDoctor.Email = request.Email.Trim().ToLower();
+
+            if (!string.IsNullOrWhiteSpace(request.Specialty))
+                existingDoctor.Specialty = request.Specialty.Trim();
+
+            if (!string.IsNullOrWhiteSpace(request.Bio))
+                existingDoctor.Bio = request.Bio.Trim();
+
+            if (request.Experience.HasValue)
+                existingDoctor.Bio += $"\nExperience: {request.Experience} years";
+
+            if (!string.IsNullOrWhiteSpace(request.Password))
+                existingDoctor.Password = request.Password;
+
             if (request.Avatar != null && request.Avatar.Length > 0)
             {
                 using var stream = request.Avatar.OpenReadStream();

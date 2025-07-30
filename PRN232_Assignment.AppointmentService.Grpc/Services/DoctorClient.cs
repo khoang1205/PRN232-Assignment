@@ -24,8 +24,6 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 
         public async Task<DoctorDto> GetDoctorByIdAsync(string id)
         {
-
-
             var doctors = await GetDoctorsAsync();
             return doctors.FirstOrDefault(d => d.Id == id);
         }
