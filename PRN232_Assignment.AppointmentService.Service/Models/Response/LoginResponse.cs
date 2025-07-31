@@ -10,5 +10,6 @@ namespace PRN232_Assignment.DoctorService.Service.Models.Response
     public class LoginResponse
     {
         public string Token { get; set; } = null!;
+        public int RoleId { get; set; }
     }
 }
