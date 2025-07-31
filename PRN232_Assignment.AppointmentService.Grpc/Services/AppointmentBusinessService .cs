@@ -99,7 +99,8 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
                     s.DailySchedule.Date == slot.DailySchedule.Date);
 
             if (alreadyBooked)
-                throw new Exception("Mỗi bệnh nhân chỉ được đặt 1 slot/bác sĩ/ngày.");
+                throw new RpcException(new Status(StatusCode.FailedPrecondition, "Mỗi bệnh nhân chỉ được đặt 1 slot/bác sĩ/ngày."));
+
 
             slot.PatientId = Guid.Parse(patientId);
             slot.Status = "Booked";

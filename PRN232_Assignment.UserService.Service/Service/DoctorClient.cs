@@ -1,6 +1,7 @@
 ﻿// DoctorClient.cs
 using Newtonsoft.Json;
 using PRN232_Assignment.AppointmentService.Grpc.DTO;
+using PRN232_Assignment.UserService.Service.Models;
 
 public class DoctorClient
 {
@@ -17,7 +18,10 @@ public class DoctorClient
         var response = await _httpClient.GetAsync("/doctors");
         response.EnsureSuccessStatusCode();
         var content = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<List<DoctorDto>>(content);
+
+        // Deserialize đúng dạng object trước rồi lấy .items
+        var wrapper = JsonConvert.DeserializeObject<DoctorResponseWrapper>(content);
+        return wrapper.Items;
     }
 
     public async Task<DoctorDto> GetDoctorByIdAsync(string id)

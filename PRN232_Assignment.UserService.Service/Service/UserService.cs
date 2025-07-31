@@ -37,7 +37,8 @@ namespace PRN232_Assignment.UserService.Service.Service
             return new LoginResponseDto
             {
                 Token = token,
-                RoleId = account.RoleId
+                RoleId = account.RoleId,
+                id = account.Id
             };
         }
 

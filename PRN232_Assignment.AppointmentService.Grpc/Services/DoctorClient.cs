@@ -18,8 +18,12 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         {
             var response = await _httpClient.GetAsync("/doctors");
             response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<DoctorDto>>(content);
+
+            // Deserialize đúng dạng object trước rồi lấy .items
+            var wrapper = JsonConvert.DeserializeObject<DoctorResponseWrapper>(content);
+            return wrapper.Items;
         }
 
         public async Task<DoctorDto> GetDoctorByIdAsync(string id)
