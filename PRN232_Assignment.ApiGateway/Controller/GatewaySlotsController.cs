@@ -80,6 +80,30 @@ namespace PRN232_Assignment.ApiGateway.Controller
          new GetBookedTimeSlotsByPatientIdRequest { PatientId = patientId });
             return Ok(res);
         }
+
+        [HttpPost("create-schedule")]
+        public async Task<IActionResult> CreateSchedule([FromBody] CreateScheduleRequest req)
+        {
+            if (string.IsNullOrEmpty(req.DoctorId) || string.IsNullOrEmpty(req.Date))
+            {
+                return BadRequest(new { message = "doctorId và date là bắt buộc" });
+            }
+
+            try
+            {
+                var reply = await _client.CreateScheduleAsync(req);
+                return Ok(new { success = true, scheduleId = reply.ScheduleId });
+            }
+            catch (RpcException rpcEx)
+            {
+                return BadRequest(new { success = false, message = rpcEx.Status.Detail });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống: " + ex.Message });
+            }
+        }
+
     }
 
 }

@@ -33,9 +33,13 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         public async Task<string> CreateScheduleAsync(string doctorId, string dateStr)
         {
             var date = DateTime.Parse(dateStr);
-            if (date.DayOfWeek == DayOfWeek.Sunday)
+            if (date.DayOfWeek == DayOfWeek.Sunday) 
                 throw new Exception("Không thể tạo lịch vào Chủ Nhật.");
+            bool scheduleExists = await _context.DailySchedules
+        .AnyAsync(s => s.DoctorId == doctorId && s.Date.Date == date.Date);
 
+            if (scheduleExists)
+                throw new Exception("Lịch đã tồn tại cho ngày này.");
             var schedule = new DailySchedule
             {
                 Id = Guid.NewGuid(),
@@ -73,6 +77,7 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
 
             return slots;
         }
+
         public async Task<List<TimeSlot>> GetAvailableSlotsAsync(string doctorId, string dateStr)
         {
             var date = DateTime.Parse(dateStr);
