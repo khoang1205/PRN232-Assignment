@@ -1,7 +1,9 @@
-﻿using Grpc.Core;
-using Appointment;
-using PRN232_Assignment.AppointmentService.Grpc.Services;
+﻿using Appointment;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Microsoft.AspNetCore.SignalR;
+using Google.Protobuf.WellKnownTypes;
+using PRN232_Assignment.AppointmentService.Grpc.Services;
 
 namespace PRN232_Assignment.AppointmentService.Grpc.Controller
 {
@@ -51,8 +53,8 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
             reply.Slots.AddRange(slots.Select(s => new TimeSlotReply
             {
                 SlotId = s.Id.ToString(),
-                StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
-                EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
+                StartTime = Timestamp.FromDateTime(s.StartTime.ToUniversalTime()),
+                EndTime = Timestamp.FromDateTime(s.EndTime.ToUniversalTime()),
                 IsBooked = s.PatientId != null
             }));
             return reply;
@@ -100,13 +102,16 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
             {
                 var slots = await _service.GetBookedSlotsByDoctorAsync(request.DoctorId, request.Date);
                 var reply = new GetSlotsReply();
+
                 reply.Slots.AddRange(slots.Select(s => new TimeSlotReply
                 {
-                    SlotId = s.Id.ToString(),
-                    StartTime = s.StartTime.ToString("yyyy-MM-dd HH:mm"),
-                    EndTime = s.EndTime.ToString("yyyy-MM-dd HH:mm"),
-                    IsBooked = true
+                    SlotId = s.SlotId.ToString(),
+                    StartTime = Timestamp.FromDateTime(s.StartTime.ToUniversalTime()),
+                    EndTime = Timestamp.FromDateTime(s.EndTime.ToUniversalTime()),
+                    IsBooked = s.PatientId != null,
+                    PatientName = s.PatientName ?? "Bệnh nhân"
                 }));
+
                 return reply;
             }
             catch (Exception ex)
@@ -115,6 +120,5 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Controller
                 throw new RpcException(new Status(StatusCode.Internal, ex.Message));
             }
         }
-
     }
 }

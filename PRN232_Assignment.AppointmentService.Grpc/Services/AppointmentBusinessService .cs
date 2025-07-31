@@ -15,17 +15,19 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
         private readonly NotificationService.NotificationServiceClient _notificationClient;
         private readonly ApplicationDbContext _context;
         private readonly DoctorClient _doctorClient;
+        private readonly UserClient _user;
 
         public AppointmentBusinessService(
                 ApplicationDbContext context,
                 UserService.UserServiceClient userClient,
                 NotificationService.NotificationServiceClient notificationClient,
-                DoctorClient doctorClient)
+                DoctorClient doctorClient, UserClient user)
         {
             _context = context;
             _userClient = userClient;
             _notificationClient = notificationClient;
             _doctorClient = doctorClient;
+            _user = user;
         }
 
         public async Task<string> CreateScheduleAsync(string doctorId, string dateStr)
@@ -120,6 +122,7 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             await _notificationClient.SendNotificationAsync(new NotificationRequest
             {
                 UserId = patientId,
+                Role = "Patient",
                 Type = "Appointment",
                 Message = $"Bạn đã đặt lịch với {doctorName} lúc {slot.StartTime:HH:mm dd/MM}"
             });
@@ -128,6 +131,7 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             await _notificationClient.SendNotificationAsync(new NotificationRequest
             {
                 UserId = slot.DailySchedule.DoctorId,
+                Role = "Doctor",
                 Type = "Appointment",
                 Message = $"Bệnh nhân {patientName} đã đặt lịch khám lúc {slot.StartTime:HH:mm dd/MM}"
             });
@@ -161,8 +165,8 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
                 });
             }
 
-			return result;
-		}
+            return result;
+        }
         public async Task<string> GetDoctorIdFromSlotAsync(string slotId)
         {
             var slot = await _context.TimeSlots
@@ -172,13 +176,13 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             if (slot == null || slot.DailySchedule == null)
                 throw new Exception("Slot không hợp lệ hoặc không có lịch");
 
-        
+
             return slot.DailySchedule.DoctorId.ToString(); // hoặc .Id nếu kiểu số
         }
 
 
         // Hàm để lấy các slot đã đặt của bác sĩ
-        public async Task<List<TimeSlot>> GetBookedSlotsByDoctorAsync(string doctorId, string dateStr)
+        public async Task<List<TimeSlotDto>> GetBookedSlotsByDoctorAsync(string doctorId, string dateStr)
         {
             var date = DateTime.Parse(dateStr);
 
@@ -187,15 +191,32 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
                 .FirstOrDefaultAsync(s => s.DoctorId == doctorId && s.Date.Date == date.Date);
 
             if (schedule == null)
-                return new List<TimeSlot>();
+                return new List<TimeSlotDto>();
 
             var bookedSlots = schedule.TimeSlots
                 .Where(s => s.PatientId != null)
                 .OrderBy(s => s.StartTime)
                 .ToList();
 
-            return bookedSlots;
-        }
+            var result = new List<TimeSlotDto>();
 
+            foreach (var slot in bookedSlots)
+            {
+                var patientId = slot.PatientId?.ToString() ?? "";
+                var patientName = await _user.GetUserNameByIdAsync(patientId) ?? "Bệnh nhân";
+
+                result.Add(new TimeSlotDto
+                {
+                    SlotId = slot.Id,
+                    StartTime = slot.StartTime,
+                    EndTime = slot.EndTime,
+                    Status = slot.Status,
+                    PatientId = patientId,
+                    PatientName = patientName
+                });
+            }
+
+            return result;
+        }
     }
 }

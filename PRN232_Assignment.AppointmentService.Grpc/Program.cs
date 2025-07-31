@@ -27,6 +27,10 @@ builder.Services.AddHttpClient<DoctorClient>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7238");
 });
+builder.Services.AddHttpClient<UserClient>(client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5012");
+});
 builder.Services.AddScoped<IAppointmentService, AppointmentBusinessService>();
 var app = builder.Build();
 

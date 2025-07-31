@@ -1,5 +1,5 @@
 ﻿syntax = "proto3";
-
+import "google/protobuf/timestamp.proto";
 package appointment;
 
 service AppointmentService {
@@ -35,9 +35,10 @@ message GetSlotsRequest {
 
 message TimeSlotReply {
   string slotId = 1;
-  string startTime = 2;
-  string endTime = 3;
+  google.protobuf.Timestamp startTime = 2;
+  google.protobuf.Timestamp endTime = 3;
   bool isBooked = 4;
+  string patientName = 5;
 }
 
 message GetSlotsReply {

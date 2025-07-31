@@ -8,8 +8,9 @@ service NotificationService {
 
 message NotificationRequest {
   string userId = 1;
-  string message = 2;
-  string type = 3; // email, sms...
+  string role = 2;     
+  string message = 3;    
+  string type = 4;      
 }
 
 message NotificationResponse {

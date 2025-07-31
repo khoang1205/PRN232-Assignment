@@ -73,6 +73,7 @@ namespace PRN232_Assignment.UserService.Service.Service
             {
             new Claim("id", user.Id.ToString()),
             new Claim("email", user.Email.ToString()),
+            new Claim("name", user.Name.ToString()),
             new Claim(ClaimTypes.Role, user.RoleId.ToString())
             };
 

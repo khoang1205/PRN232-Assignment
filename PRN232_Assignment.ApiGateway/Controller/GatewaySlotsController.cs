@@ -7,9 +7,9 @@ namespace PRN232_Assignment.ApiGateway.Controller
     [Route("api/[controller]")]
     public class GatewaySlotsController : ControllerBase
     {
-        private readonly Appointment.AppointmentService.AppointmentServiceClient _client;
+        private readonly AppointmentService.AppointmentServiceClient _client;
 
-        public GatewaySlotsController(Appointment.AppointmentService.AppointmentServiceClient client)
+        public GatewaySlotsController(AppointmentService.AppointmentServiceClient client)
         {
             _client = client;
         }
@@ -25,6 +25,29 @@ namespace PRN232_Assignment.ApiGateway.Controller
 
             return Ok(new { slots = reply.Slots });
         }
+
+        [HttpGet("booked-by-doctor")]
+        public async Task<IActionResult> GetBookedSlotsByDoctor([FromQuery] string doctorId, [FromQuery] string date)
+        {
+            if (string.IsNullOrEmpty(doctorId) || string.IsNullOrEmpty(date))
+                return BadRequest(new { message = "doctorId và date là bắt buộc" });
+
+            try
+            {
+                var reply = await _client.GetBookedSlotsByDoctorAsync(new GetBookedSlotsByDoctorRequest
+                {
+                    DoctorId = doctorId,
+                    Date = date
+                });
+
+                return Ok(new { success = true, slots = reply.Slots });
+            }
+            catch (RpcException ex)
+            {
+                return StatusCode(500, new { success = false, message = ex.Status.Detail });
+            }
+        }
+
         [HttpPost("book")]
         public async Task<IActionResult> BookSlot([FromBody] BookSlotRequest req)
         {
@@ -49,6 +72,7 @@ namespace PRN232_Assignment.ApiGateway.Controller
                 });
             }
         }
+
         [HttpGet("history")]
         public async Task<IActionResult> GetHistory([FromQuery] string patientId)
         {

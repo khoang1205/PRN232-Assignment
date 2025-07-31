@@ -21,7 +21,7 @@ namespace PRN232_Assignment.NotificationServices.Grpc.Services
             _logger.LogInformation($" [Notification] To: {request.UserId}, Type: {request.Type}, Message: {request.Message}");
 
             // Gửi đến SignalR
-            await _hub.Clients.Group($"{request.Type}-{request.UserId}")
+            await _hub.Clients.Group($"{request.Role}-{request.UserId}")
                 .SendAsync("ReceiveNotification", request.Message);
 
             // TODO: Có thể lưu vào DB hoặc gọi bên thứ 3 (email, push...)

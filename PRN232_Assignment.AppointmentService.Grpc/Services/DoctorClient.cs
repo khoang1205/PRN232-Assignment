@@ -31,7 +31,5 @@ namespace PRN232_Assignment.AppointmentService.Grpc.Services
             var doctors = await GetDoctorsAsync();
             return doctors.FirstOrDefault(d => d.Id == id);
         }
-
-
     }
 }
